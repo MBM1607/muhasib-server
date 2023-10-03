@@ -2,9 +2,9 @@
 	"name": "muhasib-server",
 	"version": "1.0.0",
 	"author": {
-		"name": "Khanate",
-		"email": "dev@khanate.pk",
-		"url": "https://khanate.pk"
+		"name": "Muhammad Khan",
+		"email": "me@muhammadkhan.dev",
+		"url": "https://muhammadkhan.dev"
 	},
 	"license": "MIT",
 	"type": "module",
