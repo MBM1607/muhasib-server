@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { regex } from '~/constants.js';
+import { regex } from "~/constants.js";
 
-import type { Utils } from '~/types/utils.types.js';
+import type { Utils } from "~/types/utils.types.js";
 
 export const portSchema = z.coerce
 	.number()
@@ -43,7 +43,7 @@ export const zodAllOrNone = <T extends Record<string, z.Schema>>(
 	shape: T,
 ): z.Schema<
 	Utils.allOrNone<
-		Utils.makeUndefinedOptional<{ [k in keyof T]: T[k]['_output'] }>
+		Utils.makeUndefinedOptional<{ [k in keyof T]: T[k]["_output"] }>
 	>
 > => {
 	return z.strictObject(shape).or(

@@ -1,15 +1,15 @@
-import { initContract } from '@ts-rest/core';
-import { initServer } from '@ts-rest/express';
-import { z } from 'zod';
+import { initContract } from "@ts-rest/core";
+import { initServer } from "@ts-rest/express";
+import { z } from "zod";
 
-import { validatedHandler } from '~/helpers/auth.helpers.js';
-import { getHashedPassword } from '~/helpers/crypto.helpers.js';
-import { omit } from '~/helpers/object.helpers.js';
-import { prisma } from '~/prisma-client.js';
+import { validatedHandler } from "~/helpers/auth.helpers.js";
+import { getHashedPassword } from "~/helpers/crypto.helpers.js";
+import { omit } from "~/helpers/object.helpers.js";
+import { prisma } from "~/prisma-client.js";
 import {
 	userSansMetaSchema,
 	userSansPasswordSchema,
-} from '~/schemas/user.schemas.js';
+} from "~/schemas/user.schemas.js";
 
 const c = initContract();
 const r = initServer();
@@ -17,15 +17,15 @@ const r = initServer();
 export const userContract = c.router(
 	{
 		get: {
-			method: 'GET',
-			path: '/user',
+			method: "GET",
+			path: "/user",
 			responses: {
 				200: z.array(userSansPasswordSchema),
 			},
 		},
 		getOne: {
-			method: 'GET',
-			path: '/user/:id',
+			method: "GET",
+			path: "/user/:id",
 			pathParams: z.strictObject({ id: z.string() }),
 			responses: {
 				200: userSansPasswordSchema,
@@ -33,15 +33,15 @@ export const userContract = c.router(
 			},
 		},
 		post: {
-			method: 'POST',
-			path: '/user',
+			method: "POST",
+			path: "/user",
 			body: userSansMetaSchema
 				.extend({ passwordConfirmation: z.string() })
 				.refine((data) => data.password === data.passwordConfirmation, {
-					message: 'Incorrect password confirmation',
-					path: ['passwordConfirmation'],
+					message: "Incorrect password confirmation",
+					path: ["passwordConfirmation"],
 				})
-				.transform((data) => omit(data, 'passwordConfirmation')),
+				.transform((data) => omit(data, "passwordConfirmation")),
 			responses: {
 				201: userSansPasswordSchema,
 			},
@@ -53,7 +53,7 @@ export const userContract = c.router(
 export const userRouter = r.router(userContract, {
 	get: validatedHandler(async () => {
 		const users = await prisma.user.findMany();
-		const body = users.map((user) => omit(user, 'password'));
+		const body = users.map((user) => omit(user, "password"));
 		return { status: 200, body };
 	}),
 	getOne: validatedHandler(async ({ params }) => {
@@ -61,17 +61,17 @@ export const userRouter = r.router(userContract, {
 			where: { id: params.id },
 		});
 		if (!user) return { status: 404, body: null };
-		const body = omit(user, 'password');
+		const body = omit(user, "password");
 		return { status: 200, body };
 	}),
 	post: async ({ body }) => {
 		const user = await prisma.user.create({
 			data: {
-				...omit(body, 'password'),
+				...omit(body, "password"),
 				password: getHashedPassword(body.password),
 			},
 		});
-		const res = omit(user, 'password');
+		const res = omit(user, "password");
 		return { status: 201, body: res };
 	},
 });

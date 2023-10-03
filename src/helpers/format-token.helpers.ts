@@ -5,7 +5,7 @@ import {
 	numeric,
 	upperAlphabet,
 	wordSeparators,
-} from '~/helpers/string-literals.helpers.js';
+} from "~/helpers/string-literals.helpers.js";
 
 import type {
 	Alphabet,
@@ -14,26 +14,26 @@ import type {
 	Numeric,
 	UpperAlphabet,
 	WordSeparators,
-} from '~/helpers/string-literals.helpers.js';
+} from "~/helpers/string-literals.helpers.js";
 
 const formatStrategies = [
-	'camel',
-	'pascal',
-	'snake',
-	'kebab',
-	'constant',
-	'human',
+	"camel",
+	"pascal",
+	"snake",
+	"kebab",
+	"constant",
+	"human",
 ] as const;
 
 type Strategy = (typeof formatStrategies)[number];
 
 const separatorMap = {
-	camel: '',
-	pascal: '',
-	snake: '_',
-	kebab: '-',
-	constant: '_',
-	human: ' ',
+	camel: "",
+	pascal: "",
+	snake: "_",
+	kebab: "-",
+	constant: "_",
+	human: " ",
 } as const;
 
 type SeparatorMap = typeof separatorMap;
@@ -51,18 +51,18 @@ type NextLoop<
 	F extends string,
 > = R extends `${infer U}${infer V}` ? _InnerFormatToken<U, S, V, C, F> : F;
 
-type _others<C extends string, S extends Strategy> = S extends 'constant'
+type _others<C extends string, S extends Strategy> = S extends "constant"
 	? Uppercase<C>
 	: Lowercase<C>;
 
 type _separate<
 	C extends string,
 	S extends Strategy,
-> = `${SeparatorMap[S]}${S extends 'kebab' | 'snake' | 'human'
+> = `${SeparatorMap[S]}${S extends "kebab" | "snake" | "human"
 	? Lowercase<C>
 	: Uppercase<C>}`;
 
-type _separated<C extends string, S extends Strategy, L extends string = ''> = [
+type _separated<C extends string, S extends Strategy, L extends string = ""> = [
 	C,
 	L,
 ] extends [Alphabet, WordSeparators]
@@ -76,10 +76,10 @@ type _separated<C extends string, S extends Strategy, L extends string = ''> = [
 type _first<
 	C extends string,
 	S extends Strategy,
-	L extends string = '',
-	F extends string = '',
-> = [L, F] extends ['', string] | [string, '']
-	? S extends 'pascal' | 'constant'
+	L extends string = "",
+	F extends string = "",
+> = [L, F] extends ["", string] | [string, ""]
+	? S extends "pascal" | "constant"
 		? Uppercase<C>
 		: Lowercase<C>
 	: _separated<C, S, L>;
@@ -87,20 +87,20 @@ type _first<
 type _alphaNum<
 	C extends string,
 	S extends Strategy,
-	L extends string = '',
-	F extends string = '',
-> = C extends AlphaNumeric ? _first<C, S, L, F> : '';
+	L extends string = "",
+	F extends string = "",
+> = C extends AlphaNumeric ? _first<C, S, L, F> : "";
 
 type _InnerFormatToken<
 	C extends string,
 	S extends Strategy,
 	R extends string,
-	L extends string = '',
-	F extends string = '',
+	L extends string = "",
+	F extends string = "",
 > = NextLoop<C, S, R, `${F}${_alphaNum<C, S, L, F>}`>;
 
 export type FormatToken<T extends string, S extends Strategy> = {
-	[K in T]: Trim<K> extends ''
+	[K in T]: Trim<K> extends ""
 		? Trim<K>
 		: Trim<K> extends `${infer U}${infer V}`
 		? _InnerFormatToken<U, S, V>
@@ -122,9 +122,9 @@ export const formatToken = <
 	strategy: S,
 ): Return => {
 	const string = input.trim();
-	if (!string) return '' as Return;
+	if (!string) return "" as Return;
 
-	let formatted = '';
+	let formatted = "";
 
 	for (let index = 0; index < string.length; index++) {
 		const current = string[index] as string;
@@ -133,7 +133,7 @@ export const formatToken = <
 		if (!alphaNumeric.includes(current)) continue;
 
 		if (!last || !formatted) {
-			formatted += ['pascal', 'constant'].includes(strategy)
+			formatted += ["pascal", "constant"].includes(strategy)
 				? current.toUpperCase()
 				: current.toLowerCase();
 		} else if (
@@ -141,13 +141,13 @@ export const formatToken = <
 			(upperAlphabet.includes(current) && lowerAlphabet.includes(last)) ||
 			(numeric.includes(current) && !numeric.includes(last))
 		) {
-			const char = ['kebab', 'snake', 'human'].includes(strategy)
+			const char = ["kebab", "snake", "human"].includes(strategy)
 				? current.toLowerCase()
 				: current.toUpperCase();
 			formatted += `${separatorMap[strategy]}${char}`;
 		} else {
 			formatted +=
-				strategy === 'constant' ? current.toUpperCase() : current.toLowerCase();
+				strategy === "constant" ? current.toUpperCase() : current.toLowerCase();
 		}
 	}
 

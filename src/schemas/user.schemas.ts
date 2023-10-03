@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { createModelSchema } from '~/helpers/schema.helpers.js';
+import { createModelSchema } from "~/helpers/schema.helpers.js";
 
-export const userRoles = ['user', 'admin', 'guest'] as const;
+export const userRoles = ["user", "admin", "guest"] as const;
 
 export type UserRole = (typeof userRoles)[number];
 

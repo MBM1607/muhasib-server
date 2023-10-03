@@ -1,9 +1,9 @@
-import { initContract } from '@ts-rest/core';
-import { initServer } from '@ts-rest/express';
+import { initContract } from "@ts-rest/core";
+import { initServer } from "@ts-rest/express";
 
-import { generalContract, generalRouter } from './general.routes.js';
-import { sessionContract, sessionRouter } from './session.routes.js';
-import { userContract, userRouter } from './user.routes.js';
+import { generalContract, generalRouter } from "./general.routes.js";
+import { sessionContract, sessionRouter } from "./session.routes.js";
+import { userContract, userRouter } from "./user.routes.js";
 
 const c = initContract();
 const s = initServer();

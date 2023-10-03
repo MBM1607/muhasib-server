@@ -1,4 +1,4 @@
-import { pino } from 'pino';
+import { pino } from "pino";
 
 export const logger = pino({
 	base: {
@@ -8,7 +8,7 @@ export const logger = pino({
 		options: {
 			colorize: true,
 		},
-		target: 'pino-pretty',
+		target: "pino-pretty",
 	},
 });
 
@@ -44,13 +44,13 @@ type BgColors = `${Colors}-bg`;
 export const stylized = (
 	message: string | number | boolean,
 	style: Variants | Colors | BgColors,
-	styleAfter: Variants | Colors | BgColors = 'reset',
+	styleAfter: Variants | Colors | BgColors = "reset",
 ) => {
-	const [key, bg] = style.split('-') as [Variants | Colors, 'bg' | undefined];
+	const [key, bg] = style.split("-") as [Variants | Colors, "bg" | undefined];
 	const code = { ...variants, ...colors }[key] + (bg ? 10 : 0);
-	const [nextKey, nextBg] = styleAfter.split('-') as [
+	const [nextKey, nextBg] = styleAfter.split("-") as [
 		Variants | Colors,
-		'bg' | undefined,
+		"bg" | undefined,
 	];
 	const nextCode = { ...variants, ...colors }[nextKey] + (nextBg ? 10 : 0);
 	return `\u001b[${code}m${message}\u001b[${nextCode}m`;

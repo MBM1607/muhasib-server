@@ -1,15 +1,15 @@
-import type { HttpStatus } from '~/helpers/http.helpers.js';
+import type { HttpStatus } from "~/helpers/http.helpers.js";
 
-const defaultHttpMessage = 'Something went wrong';
+const defaultHttpMessage = "Something went wrong";
 
 const httpMessages: Partial<Record<HttpStatus, string>> = {
-	401: 'Not logged in',
-	403: 'You do not have permission to perform this action',
-	404: 'Resource not found',
+	401: "Not logged in",
+	403: "You do not have permission to perform this action",
+	404: "Resource not found",
 };
 
 export class ApiError extends Error {
-	type = 'api-error';
+	type = "api-error";
 	status: HttpStatus;
 	constructor(status: HttpStatus, message?: string, options?: ErrorOptions) {
 		super(message ?? httpMessages[status] ?? defaultHttpMessage, options);
@@ -29,6 +29,6 @@ export class ApiError extends Error {
  */
 export const getCatchMessage = (error: unknown): string => {
 	if (error instanceof Error) return error.message;
-	if (typeof error === 'object') return JSON.stringify(error);
+	if (typeof error === "object") return JSON.stringify(error);
 	return String(error);
 };

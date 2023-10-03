@@ -8,6 +8,7 @@
 		"pino",
 		"PROPPATCH",
 		"pubout",
+		"Turso",
 		"typecheck"
 	],
 	"ignorePaths": [

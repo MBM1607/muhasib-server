@@ -1,5 +1,5 @@
-import { default as dayjs } from 'dayjs/esm';
-import utc from 'dayjs/esm/plugin/utc';
+import { default as dayjs } from "dayjs/esm";
+import utc from "dayjs/esm/plugin/utc";
 
 dayjs.extend(utc);
 
@@ -7,8 +7,8 @@ export const dayjsUtc = dayjs;
 
 export const isDate = (value: unknown): value is string | Date => {
 	if (
-		typeof value !== 'string' &&
-		typeof value !== 'number' &&
+		typeof value !== "string" &&
+		typeof value !== "number" &&
 		!(value instanceof Date)
 	)
 		return false;
@@ -19,8 +19,8 @@ export const isDate = (value: unknown): value is string | Date => {
 
 export const getDateOrNull = (value: unknown): null | Date => {
 	if (
-		typeof value !== 'string' &&
-		typeof value !== 'number' &&
+		typeof value !== "string" &&
+		typeof value !== "number" &&
 		!(value instanceof Date)
 	)
 		return null;
@@ -37,7 +37,7 @@ export const compareDate = (
 ): number => new Date(first).getTime() - new Date(second).getTime();
 
 export const dayjsFormatPatterns = {
-	date: 'YYYY-MM-DD',
-	time: 'h:mm:ss A',
-	datetime: 'YYYY-MM-DD h:mm A',
+	date: "YYYY-MM-DD",
+	time: "h:mm:ss A",
+	datetime: "YYYY-MM-DD h:mm A",
 };

@@ -1,9 +1,9 @@
 type _repeatString<
 	S extends string,
 	T extends unknown[],
-> = T['length'] extends 1 ? S : `${S}${_repeatString<S, Utils.dropFirst<T>>}`;
+> = T["length"] extends 1 ? S : `${S}${_repeatString<S, Utils.dropFirst<T>>}`;
 
-type _tuple<N extends number, T, R extends readonly T[]> = R['length'] extends N
+type _tuple<N extends number, T, R extends readonly T[]> = R["length"] extends N
 	? R
 	: _tuple<N, T, [T, ...R]>;
 

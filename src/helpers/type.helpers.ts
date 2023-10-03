@@ -1,20 +1,20 @@
-import { getCatchMessage } from '~/errors.js';
+import { getCatchMessage } from "~/errors.js";
 
-import type { Utils } from '~/types/utils.types.js';
+import type { Utils } from "~/types/utils.types.js";
 
 export const readableTypeOf = (value: unknown) => {
-	if (typeof value !== 'object') return typeof value;
-	if (value === null) return 'null';
-	if (Array.isArray(value)) return 'array';
-	return 'object';
+	if (typeof value !== "object") return typeof value;
+	if (value === null) return "null";
+	if (Array.isArray(value)) return "array";
+	return "object";
 };
 
 export const isObject = (value: unknown): value is Obj =>
-	readableTypeOf(value) === 'object';
+	readableTypeOf(value) === "object";
 
 export const assertObject: Utils.assertFunction<Obj> = (value) => {
 	const type = readableTypeOf(value);
-	if (type !== 'object')
+	if (type !== "object")
 		throw new TypeError(`Expected object, received ${type}`);
 };
 

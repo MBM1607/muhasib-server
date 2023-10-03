@@ -1,43 +1,43 @@
-import { initContract } from '@ts-rest/core';
-import { initServer } from '@ts-rest/express';
-import { z } from 'zod';
+import { initContract } from "@ts-rest/core";
+import { initServer } from "@ts-rest/express";
+import { z } from "zod";
 
-import { config } from '~/config.js';
+import { config } from "~/config.js";
 import {
 	createJwt,
 	getLocalUser,
 	validatedHandler,
-} from '~/helpers/auth.helpers.js';
-import { comparePassword } from '~/helpers/crypto.helpers.js';
-import { httpStatus } from '~/helpers/http.helpers.js';
-import { omit } from '~/helpers/object.helpers.js';
-import { prisma } from '~/prisma-client.js';
-import { sessionSchema } from '~/schemas/session.schemas.js';
+} from "~/helpers/auth.helpers.js";
+import { comparePassword } from "~/helpers/crypto.helpers.js";
+import { httpStatus } from "~/helpers/http.helpers.js";
+import { omit } from "~/helpers/object.helpers.js";
+import { prisma } from "~/prisma-client.js";
+import { sessionSchema } from "~/schemas/session.schemas.js";
 
-import type { JwtPayload } from '~/helpers/auth.helpers.js';
+import type { JwtPayload } from "~/helpers/auth.helpers.js";
 
 const c = initContract();
 const r = initServer();
 
 export const sessionContract = c.router({
 	get: {
-		method: 'GET',
-		path: '/session',
+		method: "GET",
+		path: "/session",
 		responses: {
 			200: z.array(sessionSchema),
 		},
 	},
 	delete: {
-		method: 'DELETE',
-		path: '/session',
+		method: "DELETE",
+		path: "/session",
 		body: z.strictObject({}),
 		responses: {
 			200: z.strictObject({ accessToken: z.null(), refreshToken: z.null() }),
 		},
 	},
 	post: {
-		method: 'POST',
-		path: '/session',
+		method: "POST",
+		path: "/session",
 		body: z.strictObject({
 			email: z.string().email(),
 			password: z.string(),
@@ -75,11 +75,11 @@ export const sessionRouter = r.router(sessionContract, {
 			return { status: httpStatus.unauthorized, body: null };
 
 		const session = await prisma.session.create({
-			data: { user_agent: headers['user-agent'], user_id: user.id },
+			data: { user_agent: headers["user-agent"], user_id: user.id },
 		});
 
 		const payload: JwtPayload = {
-			...omit(user, 'password'),
+			...omit(user, "password"),
 			session_id: session.id,
 		};
 

@@ -3,9 +3,9 @@ import {
 	lowerAlphabet,
 	upperAlphabet,
 	wordSeparators,
-} from '~/helpers/string-literals.helpers.js';
+} from "~/helpers/string-literals.helpers.js";
 
-export const humanizeCases = ['lower', 'sentence', 'title', 'upper'] as const;
+export const humanizeCases = ["lower", "sentence", "title", "upper"] as const;
 
 export type HumanizeCase = (typeof humanizeCases)[number];
 
@@ -17,12 +17,12 @@ export type HumanizeCase = (typeof humanizeCases)[number];
  */
 export const humanizeToken = (
 	input: string,
-	casing: HumanizeCase = 'title',
+	casing: HumanizeCase = "title",
 ): string => {
 	const string = input.trim();
-	if (!string.trim()) return '';
+	if (!string.trim()) return "";
 
-	let formatted = '';
+	let formatted = "";
 
 	for (let index = 0; index < string.length; index++) {
 		const current = string[index] as string;
@@ -32,13 +32,13 @@ export const humanizeToken = (
 
 		if (!formatted) {
 			switch (casing) {
-				case 'lower': {
+				case "lower": {
 					formatted += current.toLowerCase();
 					break;
 				}
-				case 'sentence':
-				case 'title':
-				case 'upper': {
+				case "sentence":
+				case "title":
+				case "upper": {
 					formatted += current.toUpperCase();
 					break;
 				}
@@ -47,28 +47,28 @@ export const humanizeToken = (
 			(alphabet.includes(current) && wordSeparators.includes(last)) ||
 			(upperAlphabet.includes(current) && lowerAlphabet.includes(last))
 		) {
-			formatted += ' ';
+			formatted += " ";
 			switch (casing) {
-				case 'lower':
-				case 'sentence': {
+				case "lower":
+				case "sentence": {
 					formatted += current.toLowerCase();
 					break;
 				}
-				case 'title':
-				case 'upper': {
+				case "title":
+				case "upper": {
 					formatted += current.toUpperCase();
 					break;
 				}
 			}
 		} else {
 			switch (casing) {
-				case 'lower':
-				case 'sentence':
-				case 'title': {
+				case "lower":
+				case "sentence":
+				case "title": {
 					formatted += current.toLowerCase();
 					break;
 				}
-				case 'upper': {
+				case "upper": {
 					formatted += current.toUpperCase();
 					break;
 				}
@@ -76,7 +76,7 @@ export const humanizeToken = (
 		}
 	}
 
-	if (formatted.toLowerCase().endsWith(' id'))
+	if (formatted.toLowerCase().endsWith(" id"))
 		formatted = formatted.slice(0, -3);
 
 	return formatted;
