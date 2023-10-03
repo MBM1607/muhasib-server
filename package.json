@@ -18,6 +18,7 @@
 		"test": "vitest watch",
 		"test-ui": "vitest --ui",
 		"typecheck": "vitest typecheck",
+		"env:new": "dotenv-vault new -y",
 		"env:login": "dotenv-vault login -y",
 		"env:push": "dotenv-vault push",
 		"env:pull": "dotenv-vault pull",
