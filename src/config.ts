@@ -3,7 +3,6 @@ import { z } from "zod";
 import { regex } from "~/constants.js";
 import { objectEntries } from "~/helpers/object.helpers.js";
 import { portSchema } from "~/helpers/schema.helpers.js";
-import { logger } from "~/logger.js";
 
 const envSchema = z
 	.object({
@@ -48,7 +47,7 @@ const parseConfig = () => {
 	}
 	for (const [key, schema] of objectEntries(envSchema.shape)) {
 		if (!schema.isOptional() || process.env[key] !== undefined) continue;
-		logger.warn(
+		console.warn(
 			`💡 Missing Environment: '${key}', Using Default: ${parsed.data[key]}`,
 		);
 	}
