@@ -1,16 +1,22 @@
 import { pino } from "pino";
 
-export const logger = pino({
-	base: {
-		pid: false,
-	},
-	transport: {
-		options: {
-			colorize: true,
-		},
-		target: "pino-pretty",
-	},
-});
+import { config } from "./config.js";
+
+export const logger = pino(
+	config.env === "development"
+		? {
+				base: {
+					pid: false,
+				},
+				transport: {
+					options: {
+						colorize: true,
+					},
+					target: "pino-pretty",
+				},
+		  }
+		: {},
+);
 
 const variants = {
 	reset: 0,
