@@ -34,13 +34,7 @@ export const userContract = c.router(
 		post: {
 			method: "POST",
 			path: "/user",
-			body: insertUserSchema
-				.extend({ passwordConfirmation: z.string() })
-				.refine((data) => data.password === data.passwordConfirmation, {
-					message: "Incorrect password confirmation",
-					path: ["passwordConfirmation"],
-				})
-				.transform((data) => omit(data, "passwordConfirmation")),
+			body: insertUserSchema,
 			responses: {
 				201: selectUserSchema,
 			},
