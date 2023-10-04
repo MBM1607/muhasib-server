@@ -1,4 +1,5 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"editor.comments.insertSpace": false
+	"editor.comments.insertSpace": true,
+	"editor.insertSpaces": false
 }

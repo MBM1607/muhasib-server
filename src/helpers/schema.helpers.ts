@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { regex } from "~/constants.js";
-
 import type { Utils } from "~/types/utils.types.js";
 
 export const portSchema = z.coerce
@@ -11,7 +9,7 @@ export const portSchema = z.coerce
 	.min(1024)
 	.max(65535);
 
-export const dbIdSchema = z.string().regex(regex.mongoId);
+export const dbIdSchema = z.coerce.number().int().positive();
 
 export type ZodDbId = typeof dbIdSchema;
 

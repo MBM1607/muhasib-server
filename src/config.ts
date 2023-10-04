@@ -11,7 +11,8 @@ const envSchema = z
 			.string()
 			.regex(regex.age, "invalid time string")
 			.default("15m"),
-		DATABASE_URL: z.string().regex(regex.mongoSrv),
+		DATABASE_URL: z.string().min(1),
+		DATABASE_AUTH_TOKEN: z.string().min(1).optional(),
 		HASHING_ITERATIONS: z.preprocess(
 			(value) => Number(value as string) || value,
 			z.number().int().min(10000).max(10000000),
@@ -53,7 +54,10 @@ const parseConfig = () => {
 	}
 
 	return {
-		dbUrl: parsed.data.DATABASE_URL,
+		database: {
+			url: parsed.data.DATABASE_URL,
+			authToken: parsed.data.DATABASE_AUTH_TOKEN,
+		},
 		env: parsed.data.NODE_ENV,
 		hashing: {
 			iterations: parsed.data.HASHING_ITERATIONS,

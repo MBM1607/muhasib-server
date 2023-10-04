@@ -1,15 +1,14 @@
 import { initContract } from "@ts-rest/core";
 import { initServer } from "@ts-rest/express";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
+import { db } from "~/drizzle.js";
 import { validatedHandler } from "~/helpers/auth.helpers.js";
 import { getHashedPassword } from "~/helpers/crypto.helpers.js";
 import { omit } from "~/helpers/object.helpers.js";
-import { prisma } from "~/prisma-client.js";
-import {
-	userSansMetaSchema,
-	userSansPasswordSchema,
-} from "~/schemas/user.schemas.js";
+import { dbIdSchema } from "~/helpers/schema.helpers.js";
+import { insertUserSchema, selectUserSchema, users } from "~/schema.js";
 
 const c = initContract();
 const r = initServer();
@@ -20,22 +19,22 @@ export const userContract = c.router(
 			method: "GET",
 			path: "/user",
 			responses: {
-				200: z.array(userSansPasswordSchema),
+				200: z.array(selectUserSchema),
 			},
 		},
 		getOne: {
 			method: "GET",
 			path: "/user/:id",
-			pathParams: z.strictObject({ id: z.string() }),
+			pathParams: z.strictObject({ id: dbIdSchema }),
 			responses: {
-				200: userSansPasswordSchema,
+				200: selectUserSchema,
 				404: z.null(),
 			},
 		},
 		post: {
 			method: "POST",
 			path: "/user",
-			body: userSansMetaSchema
+			body: insertUserSchema
 				.extend({ passwordConfirmation: z.string() })
 				.refine((data) => data.password === data.passwordConfirmation, {
 					message: "Incorrect password confirmation",
@@ -43,7 +42,7 @@ export const userContract = c.router(
 				})
 				.transform((data) => omit(data, "passwordConfirmation")),
 			responses: {
-				201: userSansPasswordSchema,
+				201: selectUserSchema,
 			},
 		},
 	},
@@ -52,25 +51,32 @@ export const userContract = c.router(
 
 export const userRouter = r.router(userContract, {
 	get: validatedHandler(async () => {
-		const users = await prisma.user.findMany();
-		const body = users.map((user) => omit(user, "password"));
+		const selectedUsers = await db.select().from(users).all();
+		const body = selectedUsers.map((user) => omit(user, "password"));
 		return { status: 200, body };
 	}),
 	getOne: validatedHandler(async ({ params }) => {
-		const user = await prisma.user.findUnique({
-			where: { id: params.id },
-		});
+		const user = await db
+			.select()
+			.from(users)
+			.where(eq(users.id, params.id))
+			.get();
+
 		if (!user) return { status: 404, body: null };
+
 		const body = omit(user, "password");
 		return { status: 200, body };
 	}),
 	post: async ({ body }) => {
-		const user = await prisma.user.create({
-			data: {
+		const user = await db
+			.insert(users)
+			.values({
 				...omit(body, "password"),
 				password: getHashedPassword(body.password),
-			},
-		});
+			})
+			.returning()
+			.get();
+
 		const res = omit(user, "password");
 		return { status: 201, body: res };
 	},

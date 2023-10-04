@@ -1,7 +1,8 @@
-import { default as dayjs } from "dayjs/esm";
-import utc from "dayjs/esm/plugin/utc";
+import dayjs from "dayjs";
+// import { default as dayjs } from "dayjs/esm";
+// import utc from "dayjs/esm/plugin/utc";
 
-dayjs.extend(utc);
+// dayjs.extend(utc);
 
 export const dayjsUtc = dayjs;
 

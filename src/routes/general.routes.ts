@@ -19,7 +19,7 @@ export const generalRouter = r.router(generalContract, {
 	echo: async () => {
 		return Promise.resolve({
 			status: 200,
-			body: { message: "Hello World", success: true },
+			body: { message: "Muhasib API is running!", success: true },
 		});
 	},
 });

@@ -1,8 +1,10 @@
 import { initContract } from "@ts-rest/core";
 import { initServer } from "@ts-rest/express";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { config } from "~/config.js";
+import { db } from "~/drizzle.js";
 import {
 	createJwt,
 	getLocalUser,
@@ -11,8 +13,7 @@ import {
 import { comparePassword } from "~/helpers/crypto.helpers.js";
 import { httpStatus } from "~/helpers/http.helpers.js";
 import { omit } from "~/helpers/object.helpers.js";
-import { prisma } from "~/prisma-client.js";
-import { sessionSchema } from "~/schemas/session.schemas.js";
+import { selectSessionSchema, sessions, users } from "~/schema.js";
 
 import type { JwtPayload } from "~/helpers/auth.helpers.js";
 
@@ -24,7 +25,7 @@ export const sessionContract = c.router({
 		method: "GET",
 		path: "/session",
 		responses: {
-			200: z.array(sessionSchema),
+			200: z.array(selectSessionSchema),
 		},
 	},
 	delete: {
@@ -55,28 +56,46 @@ export const sessionContract = c.router({
 export const sessionRouter = r.router(sessionContract, {
 	get: validatedHandler(async ({ res }) => {
 		const userId = getLocalUser(res).id;
-		const body = await prisma.session.findMany({
-			where: { user_id: userId, valid: true },
-		});
+
+		const body = await db
+			.select()
+			.from(sessions)
+			.where(eq(sessions.userId, userId))
+			.where(eq(sessions.valid, 1))
+			.all();
+
 		return { status: 200, body };
 	}),
 	delete: validatedHandler(async ({ res }) => {
 		const id = getLocalUser(res).session_id;
-		await prisma.session.update({
-			data: { valid: false },
-			where: { id },
-		});
+		await db
+			.update(sessions)
+			.set({
+				valid: 0,
+			})
+			.where(eq(sessions.id, id))
+			.run();
+
 		return { status: 200, body: { accessToken: null, refreshToken: null } };
 	}),
 	post: async ({ body, headers }) => {
-		const user = await prisma.user.findUnique({ where: { email: body.email } });
+		const user = await db
+			.select()
+			.from(users)
+			.where(eq(users.email, body.email))
+			.get();
 
 		if (!user || !comparePassword(body.password, user.password))
 			return { status: httpStatus.unauthorized, body: null };
 
-		const session = await prisma.session.create({
-			data: { user_agent: headers["user-agent"], user_id: user.id },
-		});
+		const session = await db
+			.insert(sessions)
+			.values({
+				userId: user.id,
+				userAgent: headers["user-agent"],
+			})
+			.returning()
+			.get();
 
 		const payload: JwtPayload = {
 			...omit(user, "password"),

@@ -1,21 +1,23 @@
+import { eq } from "drizzle-orm";
 import { default as jwt } from "jsonwebtoken";
+import { z } from "zod";
 
 import { config } from "~/config.js";
+import { db } from "~/drizzle.js";
 import { getCatchMessage } from "~/errors.js";
 import { httpStatus } from "~/helpers/http.helpers.js";
 import { dbIdSchema } from "~/helpers/schema.helpers.js";
-import { prisma } from "~/prisma-client.js";
-import { userSansPasswordSchema } from "~/schemas/user.schemas.js";
+import { sessions, users } from "~/schema.js";
 
 import type { AppRoute } from "@ts-rest/core";
 import type { AppRouteOptions } from "@ts-rest/express";
 import type { Request, RequestHandler, Response } from "express";
 import type { SignOptions } from "jsonwebtoken";
-import type { z } from "zod";
-import type { UserRole } from "~/schemas/user.schemas.js";
 
-export const jwtPayloadSchema = userSansPasswordSchema.extend({
+export const jwtPayloadSchema = z.strictObject({
 	id: dbIdSchema,
+	name: z.string(),
+	email: z.string().email(),
 	session_id: dbIdSchema,
 });
 
@@ -58,16 +60,27 @@ const reIssueAccessToken = async (
 		throw new Error("Refresh token expired");
 	if (!refreshToken.valid) throw new Error("Invalid refresh token");
 
-	const session = await prisma.session.findUnique({
-		where: { id: refreshToken.payload.session_id },
-	});
-	if (!session?.valid) throw new Error("Session is no longer valid");
+	const session = await db
+		.select()
+		.from(sessions)
+		.where(eq(sessions.id, refreshToken.payload.session_id))
+		.get();
 
-	const user = await prisma.user.findUnique({ where: { id: session.user_id } });
-	if (!user) throw new Error("user not found");
+	if (!session) throw new Error("Session not found");
+	if (!session.valid) throw new Error("Session is no longer valid");
+
+	const user = await db
+		.select()
+		.from(users)
+		.where(eq(users.id, session.userId))
+		.get();
+
+	if (!user) throw new Error("User not found");
 
 	const payload: JwtPayload = {
-		...user,
+		id: user.id,
+		name: user.name,
+		email: user.email,
 		session_id: session.id,
 	};
 	const accessToken = createJwt(payload, { expiresIn: config.refreshTokenAge });
@@ -75,9 +88,7 @@ const reIssueAccessToken = async (
 	return payload;
 };
 
-export const validateAuth = (
-	availableTo?: UserRole | UserRole[],
-): RequestHandler => {
+export const validateAuth = (): RequestHandler => {
 	return async (request, response, next) => {
 		try {
 			const verification = verifyJwt(
@@ -92,18 +103,6 @@ export const validateAuth = (
 
 			response.locals.user = user;
 
-			const authArray = availableTo
-				? Array.isArray(availableTo)
-					? availableTo
-					: [availableTo]
-				: [];
-
-			if (authArray.length > 0 && !authArray.includes(user.role)) {
-				return response.status(httpStatus.forbidden).json({
-					message: "You do not have access to this resource",
-					type: "unauthorized",
-				});
-			}
 			next();
 		} catch (error) {
 			return response

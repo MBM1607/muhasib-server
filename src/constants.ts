@@ -53,11 +53,4 @@ export const regex = {
 	publicKey: /^-----BEGIN PUBLIC KEY-----.+-----END PUBLIC KEY-----$/su,
 	privateKey:
 		/^-----BEGIN RSA PRIVATE KEY-----.+-----END RSA PRIVATE KEY-----$/su,
-	mongoSrv: new RegExp(
-		`^${Object.values(mongo)
-			.map((r) => r.source)
-			.join("")}$`,
-		"iu",
-	),
-	mongoId: /^[a-f\d]{24}$/iu,
 };

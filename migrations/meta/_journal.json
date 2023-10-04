@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1696384680362,
+      "tag": "0000_quick_namorita",
+      "breakpoints": true
+    }
+  ]
+}
