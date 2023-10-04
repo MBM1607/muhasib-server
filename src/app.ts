@@ -19,7 +19,6 @@ const main = async () => {
 		exposedHeaders: ["x-access-token"],
 	};
 
-	// TODO Modify origin to correct production origin
 	if (config.env === "production") CORS_OPTIONS.origin = "api.muhasib.app";
 
 	app.use(cors(CORS_OPTIONS));
