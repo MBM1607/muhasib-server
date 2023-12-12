@@ -15,6 +15,13 @@
       "when": 1696444048085,
       "tag": "0001_thin_brother_voodoo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1702374010228,
+      "tag": "0002_fixed_talisman",
+      "breakpoints": true
     }
   ]
 }

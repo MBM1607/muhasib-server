@@ -61,3 +61,14 @@ export const fasts = sqliteTable("fasts", {
 
 export const insertFastSchema = createInsertSchema(fasts);
 export const selectFastSchema = createSelectSchema(fasts);
+
+export const duas = sqliteTable("duas", {
+	id: integer("id").primaryKey(),
+	english: text("english").notNull(),
+	arabic: text("arabic").notNull(),
+	urdu: text("urdu").notNull(),
+	reference: text("reference").notNull(),
+	category: text("category").notNull(),
+});
+
+export const selectDuaSchema = createSelectSchema(duas);
