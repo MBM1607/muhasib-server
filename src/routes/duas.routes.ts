@@ -4,7 +4,6 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "~/drizzle.js";
-import { validatedHandler } from "~/helpers/auth.helpers.js";
 import { dbIdSchema } from "~/helpers/schema.helpers.js";
 import { duas, selectDuaSchema } from "~/schema.js";
 
@@ -31,11 +30,11 @@ export const duaContract = c.router({
 });
 
 export const duaRouter = r.router(duaContract, {
-	getAll: validatedHandler(async () => {
+	getAll: async () => {
 		const duasData = await db.select().from(duas).all();
 		return { status: 200, body: duasData };
-	}),
-	getOne: validatedHandler(async ({ params }) => {
+	},
+	getOne: async ({ params }) => {
 		const dua = await db
 			.select()
 			.from(duas)
@@ -45,5 +44,5 @@ export const duaRouter = r.router(duaContract, {
 		if (!dua) return { status: 404, body: null };
 
 		return { status: 200, body: dua };
-	}),
+	},
 });
