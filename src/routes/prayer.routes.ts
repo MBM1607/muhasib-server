@@ -1,7 +1,7 @@
 import { initContract } from "@ts-rest/core";
 import { initServer } from "@ts-rest/express";
 import dayjs from "dayjs";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "~/drizzle.js";
@@ -14,7 +14,7 @@ const r = initServer();
 export const prayerRequestSchema = z.strictObject({
 	name: z.enum(["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]),
 	method: z.enum(["Infradi", "Jamat", "Qaza"]),
-	prayedAt: z.coerce.date(),
+	date: z.coerce.date(),
 });
 
 export const prayerResponseSchema = selectPrayerSchema.omit({
@@ -58,8 +58,7 @@ export const prayerRouter = r.router(prayerContract, {
 			.where(
 				and(
 					eq(prayers.userId, userId),
-					gte(prayers.prayedAt, dayjs(date).startOf("day").toDate()),
-					lte(prayers.prayedAt, dayjs(date).endOf("day").toDate()),
+					eq(prayers.date, dayjs(date).startOf("day").toDate()),
 				),
 			)
 			.all();
@@ -78,32 +77,29 @@ export const prayerRouter = r.router(prayerContract, {
 						and(
 							eq(prayers.userId, userId),
 							eq(prayers.name, prayerRequest.name),
-							gte(
-								prayers.prayedAt,
-								dayjs(prayerRequest.prayedAt).startOf("day").toDate(),
-							),
-							lte(
-								prayers.prayedAt,
-								dayjs(prayerRequest.prayedAt).endOf("day").toDate(),
+							eq(
+								prayers.date,
+								dayjs(prayerRequest.date).startOf("day").toDate(),
 							),
 						),
 					)
 					.get();
 
-				const prayer = await (existingPrayer
-					? db
-							.update(prayers)
-							.set({
-								method: prayerRequest.method,
-								prayedAt: prayerRequest.prayedAt,
+				const prayer = await (
+					existingPrayer
+						? db
+								.update(prayers)
+								.set({
+									method: prayerRequest.method,
+									date: prayerRequest.date,
+								})
+								.where(eq(prayers.id, existingPrayer.id))
+						: db.insert(prayers).values({
+								userId,
+								name: prayerRequest.name as string,
+								method: prayerRequest.method as string,
+								date: prayerRequest.date,
 							})
-							.where(eq(prayers.id, existingPrayer.id))
-					: db.insert(prayers).values({
-							userId,
-							name: prayerRequest.name as string,
-							method: prayerRequest.method as string,
-							prayedAt: prayerRequest.prayedAt,
-					  })
 				)
 					.returning()
 					.get();

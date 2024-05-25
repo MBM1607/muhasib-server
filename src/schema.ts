@@ -44,7 +44,7 @@ export const prayers = sqliteTable("prayers", {
 		.references(() => users.id),
 	name: text("name").notNull(), // e.g. Fajr, Dhuhr, Asr, Maghrib, Isha
 	method: text("method").notNull(), // e.g. Infradi, Jamat, Qaza
-	prayedAt: integer("date", { mode: "timestamp" }).notNull(),
+	date: integer("date", { mode: "timestamp" }).notNull(),
 });
 
 export const insertPrayerSchema = createInsertSchema(prayers);
@@ -56,7 +56,6 @@ export const fasts = sqliteTable("fasts", {
 		.notNull()
 		.references(() => users.id),
 	date: integer("date", { mode: "timestamp" }).notNull(),
-	fastType: text("fast_type").notNull(), // e.g. Fard, Qaza, Nafl
 });
 
 export const insertFastSchema = createInsertSchema(fasts);

@@ -1,6 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { initServer } from "@ts-rest/express";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { config } from "~/config.js";
@@ -60,8 +60,7 @@ export const sessionRouter = r.router(sessionContract, {
 		const body = await db
 			.select()
 			.from(sessions)
-			.where(eq(sessions.userId, userId))
-			.where(eq(sessions.valid, 1))
+			.where(and(eq(sessions.userId, userId), eq(sessions.valid, 1)))
 			.all();
 
 		return { status: 200, body };

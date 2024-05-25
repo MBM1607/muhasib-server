@@ -1,7 +1,8 @@
 import { initContract } from "@ts-rest/core";
 import { initServer } from "@ts-rest/express";
 
-import { duaContract, duaRouter } from "./duas.routes.js";
+import { duaContract, duaRouter } from "./dua.routes.js";
+import { fastContract, fastRouter } from "./fast.routes.js";
 import { generalContract, generalRouter } from "./general.routes.js";
 import { prayerContract, prayerRouter } from "./prayer.routes.js";
 import { sessionContract, sessionRouter } from "./session.routes.js";
@@ -16,6 +17,7 @@ export const contract = c.router({
 	general: generalContract,
 	prayer: prayerContract,
 	dua: duaContract,
+	fast: fastContract,
 });
 
 export const router = s.router(contract, {
@@ -24,4 +26,5 @@ export const router = s.router(contract, {
 	session: sessionRouter,
 	prayer: prayerRouter,
 	dua: duaRouter,
+	fast: fastRouter,
 });

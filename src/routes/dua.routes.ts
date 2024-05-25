@@ -13,7 +13,7 @@ const r = initServer();
 export const duaContract = c.router({
 	getAll: {
 		method: "GET",
-		path: "/duas",
+		path: "/dua",
 		responses: {
 			200: z.array(selectDuaSchema),
 		},
